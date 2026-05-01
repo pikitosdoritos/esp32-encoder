@@ -1,22 +1,31 @@
 import serial
-from pynput.keyboard import Controller, Key
+import keyboard
+import time
 
-ser = serial.Serial("COM5", 115200)
-keyboard = Controller()
+PORT = "COM5"
+BAUDRATE = 115200
+
+ser = serial.Serial(PORT, BAUDRATE, timeout=1)
+time.sleep(2)
+
+print("Connected")
+print("Rotate encoder = volume up/down")
+print("Press encoder = mute/unmute")
 
 while True:
-    line = ser.readline().decode().strip()
+    line = ser.readline().decode("utf-8", errors="ignore").strip()
 
-    if line == "UP":
-        keyboard.press(Key.media_volume_up)
-        keyboard.release(Key.media_volume_up)
+    if line:
+        print("Received:", line)
 
-    elif line == "DOWN":
-        keyboard.press(Key.media_volume_down)
-        keyboard.release(Key.media_volume_down)
+    if line == "TOGGLE_SOUND":
+        keyboard.press_and_release("volume mute")
+        print("Mute/unmute")
 
-    elif line == "MUTE":
-        keyboard.press(Key.media_volume_mute)
-        keyboard.release(Key.media_volume_mute)
+    elif line == "VOLUME_UP":
+        keyboard.press_and_release("volume up")
+        print("Volume up")
 
-    print(line)
+    elif line == "VOLUME_DOWN":
+        keyboard.press_and_release("volume down")
+        print("Volume down")
